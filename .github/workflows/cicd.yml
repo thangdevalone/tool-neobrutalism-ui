@@ -24,7 +24,7 @@ jobs:
     steps:
      
       - name: Run Docker container
-        run: docker run -d -p 3001:3001 tool-app:latest
+        run: sudo docker run -d -p 3001:3001 tool-app:latest
    
 
    
