@@ -22,8 +22,7 @@ jobs:
     needs: build
     runs-on: self-hosted
     steps:
-      - name: Delete old container
-        run: docker rm -f tool-app
+     
       - name: Run Docker container
         run: docker run -d -p 3001:3001 tool-app:latest
    
