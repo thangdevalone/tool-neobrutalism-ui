@@ -1,0 +1,31 @@
+name: Deploy Next.js Application
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build docker image
+        run: docker build -t tool-app:latest .
+
+    
+
+  deloy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - name: Delete old container
+        run: docker rm -f tool-app
+      - name: Run Docker container
+        run: docker run -d -p 3001:3001 tool-app:latest
+   
+
+   
