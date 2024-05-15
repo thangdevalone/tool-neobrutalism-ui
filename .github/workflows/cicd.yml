@@ -19,7 +19,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: ip-172-31-38-120
+    runs-on: self-hosted
     steps:
      
       - name: Run Docker container
