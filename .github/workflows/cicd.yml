@@ -8,7 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -18,9 +17,9 @@ jobs:
 
     
 
-  deloy:
+  deploy:
     needs: build
-    runs-on: self-hosted
+    runs-on: ip-172-31-38-120
     steps:
      
       - name: Run Docker container
