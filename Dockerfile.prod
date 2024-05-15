@@ -1,0 +1,16 @@
+# Use Node.js 20 on Alpine Linux 3.18 as the base image
+FROM node:20-alpine3.18 as builder
+
+# Set the working directory inside the container
+WORKDIR /app
+
+COPY . .
+# Install dependencies using Yarn
+RUN yarn install
+
+RUN yarn build
+
+EXPOSE 3001
+
+# Command to run the Next.js application
+CMD ["yarn", "start", "-p", "3001"]
