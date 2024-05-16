@@ -4,9 +4,12 @@ FROM node:20-alpine3.18 as builder
 # Set the working directory inside the container
 WORKDIR /app
 
-COPY . .
+COPY package.json ./
+
 # Install dependencies using Yarn
 RUN yarn install
+
+COPY . .
 
 EXPOSE 3001
 
