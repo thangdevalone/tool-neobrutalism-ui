@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
-function WheelComponent({ wheelItem,setValue }) {
+function WheelComponent({ wheelItem, setValue }) {
   const wheelContainer = useRef(null);
   const wheelInstance = useRef(null); // Ref to store the Wheel instance
   const [items, setItems] = useState([]);
@@ -19,24 +19,24 @@ function WheelComponent({ wheelItem,setValue }) {
   const [openWin, setOpenWin] = useState(false);
   const winnerRef = useRef(null);
   const [colorArray, setColorArray] = useState();
-  const [disable,setDisable]=useState(false)
+  const [disable, setDisable] = useState(false);
   useEffect(() => {
     const lines = wheelItem
       .split("\n")
       .map((line) => line.trim())
       .filter((line) => line.length > 0);
     if (lines.length === 0) {
-      setDisable(true)
+      setDisable(true);
       setItems([""]);
       setColorArray(["#fff"]);
     }
-    if (lines.length>0) {
-      setDisable(false)
+    if (lines.length > 0) {
+      setDisable(false);
 
       const data_set = lines.map((item) => {
         return { label: item };
       });
-      if ((data_set.length !== items.length)||data_set.length===1) {
+      if (data_set.length !== items.length || data_set.length === 1) {
         setColorArray(getRandomHexColors(lines.length));
       }
       setItems(data_set);
@@ -113,11 +113,14 @@ function WheelComponent({ wheelItem,setValue }) {
       }
     };
   }, [winnerRef]);
-  const handleRemove=()=>{
-    const val=items.splice(random, 1)
-    setItems(val)
-    setValue(val.join('\n'))
-  }
+  const handleRemove = () => {
+    const val = items.filter((_, index) => index !== random);
+    setOpenWin(false);
+    setTimeout(() => {
+      setItems(val);
+      setValue(val.map((item) => item.label).join("\n"));
+    }, 500);
+  };
   return (
     <div className="flex flex-col h-full w-full">
       <Dialog onOpenChange={setOpenWin} open={openWin}>
@@ -125,7 +128,7 @@ function WheelComponent({ wheelItem,setValue }) {
           <DialogHeader>
             <DialogTitle>Chúng ta đã có người chiến thắng!</DialogTitle>
             <p className="mb-0 text-2xl font-semibold">
-              {random && items[random]?.label || "Không xác định"}
+              {(random && items[random]?.label) || "Không xác định"}
             </p>
           </DialogHeader>
           <DialogFooter>
@@ -141,9 +144,10 @@ function WheelComponent({ wheelItem,setValue }) {
         </DialogContent>
       </Dialog>
 
-      <div
-      >
-        <Button disabled={disable} onClick={handleRole}>Quay</Button>
+      <div>
+        <Button disabled={disable} onClick={handleRole}>
+          Quay
+        </Button>
       </div>
 
       <div
