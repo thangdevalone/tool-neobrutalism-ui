@@ -2,7 +2,7 @@ import * as easing from "@/lib/easing";
 import { useEffect, useRef, useState } from "react";
 import { Wheel } from "spin-wheel";
 import { Button } from "../ui/button";
-
+import Logo from "@/app/logo.svg";
 import {
   Dialog,
   DialogClose,
@@ -11,33 +11,31 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
+import Image from "next/image";
 function WheelComponent({ wheelItem, setValue }) {
   const wheelContainer = useRef(null);
   const wheelInstance = useRef(null); // Ref to store the Wheel instance
   const [items, setItems] = useState([]);
-  const [random, setRandom] = useState();
+  const [random, setRandom] = useState(getRandomInt(0, items.length));
   const [openWin, setOpenWin] = useState(false);
   const winnerRef = useRef(null);
   const [colorArray, setColorArray] = useState();
   const [disable, setDisable] = useState(false);
+  const [roling, setRoling] = useState(false);
   useEffect(() => {
-    const lines = wheelItem
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0);
-    if (lines.length === 0) {
+    if (wheelItem.length === 0) {
       setDisable(true);
       setItems([""]);
       setColorArray(["#fff"]);
     }
-    if (lines.length > 0) {
+    if (wheelItem.length > 0) {
       setDisable(false);
 
-      const data_set = lines.map((item) => {
+      const data_set = wheelItem.map((item) => {
         return { label: item };
       });
       if (data_set.length !== items.length || data_set.length === 1) {
-        setColorArray(getRandomHexColors(lines.length));
+        setColorArray(getRandomHexColors(wheelItem.length));
       }
       setItems(data_set);
     }
@@ -83,27 +81,31 @@ function WheelComponent({ wheelItem, setValue }) {
         wheelInstance.current.itemBackgroundColors = colorArray;
       }
     }
-  }, [items, wheelItem, colorArray]);
+  }, [items, colorArray]);
   function getRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min; // Inclusive of min and max
   }
   const handleRole = () => {
-    const ran = getRandomInt(0, items.length);
-    setRandom(ran);
-    if (wheelInstance?.current) {
-      winnerRef.current = setTimeout(() => {
-        setOpenWin(true);
-      }, 7400);
-      wheelInstance.current.spinToItem(
-        ran,
-        6000,
-        true,
-        6,
-        1,
-        easing.cubicInOut
-      );
+    if (roling == false) {
+      const ran = getRandomInt(0, items.length - 1);
+      setRandom(ran);
+      setRoling(true);
+      if (wheelInstance?.current || wheelInstance?.current?.spinToItem) {
+        winnerRef.current = setTimeout(() => {
+          setOpenWin(true);
+          setRoling(false);
+        }, 7400);
+        wheelInstance.current?.spinToItem(
+          ran,
+          6000,
+          false,
+          6,
+          1,
+          easing.cubicOut
+        );
+      }
     }
   };
   useEffect(() => {
@@ -119,8 +121,9 @@ function WheelComponent({ wheelItem, setValue }) {
     setTimeout(() => {
       setItems(val);
       setValue(val.map((item) => item.label).join("\n"));
-    }, 500);
+    }, 350);
   };
+  console.log(items[random]?.label,random)
   return (
     <div className="flex flex-col h-full w-full">
       <Dialog onOpenChange={setOpenWin} open={openWin}>
@@ -128,7 +131,7 @@ function WheelComponent({ wheelItem, setValue }) {
           <DialogHeader>
             <DialogTitle>Chúng ta đã có người chiến thắng!</DialogTitle>
             <p className="mb-0 text-2xl font-semibold">
-              {(random && items[random]?.label) || "Không xác định"}
+              {(random!==null && items[random]?.label) || "Không xác định"}
             </p>
           </DialogHeader>
           <DialogFooter>
@@ -144,16 +147,42 @@ function WheelComponent({ wheelItem, setValue }) {
         </DialogContent>
       </Dialog>
 
-      <div>
-        <Button disabled={disable} onClick={handleRole}>
-          Quay
-        </Button>
-      </div>
-
       <div
         className={"w-full !font-wheel h-full relative"}
         ref={wheelContainer}
-      ></div>
+      >
+        <div className="absolute top-[50%] left-[50%] z-10 -translate-x-1/2  -translate-y-1/2">
+          {wheelInstance.current ? (
+            <Button
+              className="!bg-white"
+              disabled={disable}
+              style={{
+                width: `${
+                  wheelInstance.current
+                    ? wheelInstance.current._actualRadius * 0.28
+                    : 0
+                }px`,
+                height: `${
+                  wheelInstance.current
+                    ? wheelInstance.current._actualRadius * 0.28
+                    : 0
+                }px`,
+                borderRadius: "1000px",
+              }}
+              onClick={handleRole}
+            >
+              <Image
+                className="h-[100%]  w-auto select-none cursor-pointer"
+                priority={true}
+                src={Logo}
+                alt="logo"
+              />
+            </Button>
+          ) : (
+            "Đang tải..."
+          )}
+        </div>
+      </div>
     </div>
   );
 }

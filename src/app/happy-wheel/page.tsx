@@ -5,28 +5,31 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { WheelItem } from "@/models";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 export default function HappyWheel() {
-  const [data, setData] = useState<WheelItem[]>();
-  const [value,setValue]=useState('')
-  const handleChange = (event:ChangeEvent<HTMLTextAreaElement>) => {
+  const [value, setValue] = useState("");
+  const [lines, setLines] = useState<String[]>([]);
+  const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setValue(event.target.value);
-    
   };
+  useEffect(() => {
+    const line_s = value
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
+    setLines(line_s as string[]);
+  }, [value]);
   return (
     <div className="bg-[radial-gradient(#cacbce_1px,transparent_1px)]  [background-size:16px_16px] ml-[250px] min-h-[100dvh] sm:px-0 w-[calc(100vw_-_250px)] bg-bg px-5 pt-[88px] md:ml-[180px] md:w-[calc(100vw_-_180px)] sm:m-0 sm:w-full sm:pt-16">
-      <div
-        className="flex sm:px-3 relative flex-row items-center w-full md:flex-col h-[calc(100vh-88px)] md:h-[calc(100vh-4rem)] py-5 md:pt-3 md:pb-2 overflow-x-hidden "
-      >
-        <WheelComponent setValue={setValue} wheelItem={value} />
+      <div className="flex sm:px-3 relative flex-row items-center w-full md:flex-col h-[calc(100vh-88px)] md:h-[calc(100vh-4rem)] py-5 md:pt-3 md:pb-2 overflow-x-hidden ">
+        <WheelComponent setValue={setValue} wheelItem={lines} />
         <div className="h-full absoulte">
-          <Tabs  defaultValue="1" className="w-[400px] sm:w-full">
+          <Tabs defaultValue="1" className="w-[400px] sm:w-full">
             <TabsList>
               <TabsTrigger value="1">Cấu hình</TabsTrigger>
               <TabsTrigger value="2">Lịch sử</TabsTrigger>
