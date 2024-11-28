@@ -33,16 +33,30 @@ export default function HappyWheel() {
       const workbook = XLSX.read(data, {type: "binary"});
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
-      const jsonData: string[][] = XLSX.utils.sheet_to_json(sheet, {
+
+      const jsonData: any[][] = XLSX.utils.sheet_to_json(sheet, {
         header: 1,
       });
+      const firstColumnHeader = jsonData[0]?.[0]?.toString().trim();
+      if (firstColumnHeader !== "Người tham gia") {
+        alert("File không hợp lệ. Cột đầu tiên phải là 'Người tham gia'.");
+        return;
+      }
 
-      const newLines = jsonData.flat().map((item) => item.toString().trim()).filter((item) => item.length > 0);
-      setLines((prevLines) => [...prevLines, ...newLines]);
+      const newLines = jsonData
+        .slice(1)
+        .map((row) => row[0]?.toString().trim())
+        .filter((item) => item && item.length > 0);
+
+      setLines((prevLines) => {
+        setValue(newLines.join("\n"));
+        return newLines;
+      });
     };
 
     reader.readAsBinaryString(file);
   };
+
 
   return (
     <div
