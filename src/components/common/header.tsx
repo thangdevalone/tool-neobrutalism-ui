@@ -18,9 +18,6 @@ const Header = (props: Props) => {
               alt="logo"
             />
           </Link>
-          <div>
-            <Button>Đăng nhập</Button>
-          </div>
         </div>
       </nav>
     </header>
