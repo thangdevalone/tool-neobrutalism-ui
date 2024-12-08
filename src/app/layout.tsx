@@ -7,7 +7,7 @@ import {inter} from "./fonts";
 
 
 export const metadata: Metadata = {
-  title: "App ",
+  title: "App",
   description: "Bộ trò chơi & công cụ",
 };
 

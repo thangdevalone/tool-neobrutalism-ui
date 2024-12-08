@@ -33,6 +33,16 @@ export default function Page() {
     setLines(line_s as string[]);
   }, [value]);
 
+  const shuffleArray = (array: String[]): String[] => {
+    return [...array].sort(() => Math.random() - 0.5);
+  };
+
+  const handleRandomize = () => {
+    const randomizedLines = shuffleArray(lines);
+    setLines(randomizedLines);
+    setValue(randomizedLines.join("\n"));
+  };
+
   useEffect(() => {
     if (!prizes.find(item => item.quantity > 0) && isAuto) {
       setIsAuto(false)
@@ -98,7 +108,6 @@ export default function Page() {
   ) => {
     if (event.key === "Enter" && event.target instanceof HTMLInputElement) {
       event.preventDefault();
-      // Only add a new row if the target is the last row
       if (index === prizes.length - 1) {
         setPrizes((prevPrizes) => [
           ...prevPrizes,
@@ -107,33 +116,30 @@ export default function Page() {
       }
     }
 
-    // Handle the delete action (Shift + Delete)
     if (event.key === "Delete" && event.shiftKey && prizes.length > 1) {
       setPrizes((prevPrizes) => {
-        // Filter out the row at the current index
         return prevPrizes.filter((_, idx) => idx !== index);
       });
     }
   };
   const handleSpin = () => {
-    // Check if all prize quantities are 0
     const allPrizesAreZero = prizes.every((prize) => prize.quantity === 0);
 
     if (allPrizesAreZero) {
       alert("Không có giải nào có sẵn.");
-      setIsAuto(false); // Disable auto spin if all prizes have quantity 0
+      setIsAuto(false);
     } else {
-      setIsAuto((prev) => !prev); // Toggle the auto-spin state
+      setIsAuto((prev) => !prev);
     }
   };
   return (
     <div
-      className="bg-[radial-gradient(#cacbce_1px,transparent_1px)] w-[calc(100vw_-_400px)] [background-size:16px_16px] ml-[400px] min-h-[100dvh] sm:px-0 bg-bg px-5 pt-[88px] md:ml-[180px] md:w-[calc(100vw_-_180px)] sm:m-0 sm:w-full sm:pt-16"
+      className="w-[calc(100vw_-_400px)] [background-size:16px_16px] ml-[400px] min-h-[100dvh] sm:px-0 bg-bg px-5 pt-[88px] md:ml-[180px] md:w-[calc(100vw_-_180px)] sm:m-0 sm:w-full sm:pt-16"
     >
       <motion.div
-        className="flex-row flex gap-3 pr-4 items-center text-xl font-semibold shadow-base z-[20] bottom-[20px] right-[20px] fixed bg-white rounded-xl p-2"
-        initial={{y: 100, opacity: 0}}
-        animate={{y: nowPrize.length > 0 ? 0 : 100, opacity: nowPrize.length > 0 ? 1 : 0}}
+        className="flex-row flex gap-3 pr-4 items-center text-2xl font-semibold  z-[20] top-[10px] left-[42%] -translate-x-1/2 fixed bg-white rounded-xl p-2"
+        initial={{y: -100, opacity: 0}}
+        animate={{y: nowPrize.length > 0 ? 0 : -100, opacity: nowPrize.length > 0 ? 1 : 0}}
         transition={{duration: 0.5}}
       >
         <video src="/videos/wheel.mp4" className="w-[50px] h-[50px]" autoPlay muted loop/>
@@ -177,6 +183,9 @@ export default function Page() {
                       onChange={handleFileUpload}
                       className="mt-2"
                     />
+                  </div>
+                  <div className='mt-6'>
+                    <Button onClick={handleRandomize}>Random nhãn</Button>
                   </div>
                 </CardContent>
               </Card>

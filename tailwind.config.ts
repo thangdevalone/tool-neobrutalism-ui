@@ -39,9 +39,9 @@ const config = {
         wheel: ["var(--wheel-font)", ...fontFamily.sans],
       },
       colors: {
-        bg: "#fff4e0",
-        main: "#FD9745",
-        border: "hsl(var(--border))",
+        bg: "#dfe5f2",
+        main: "#88aaee",
+        border: "#000",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
