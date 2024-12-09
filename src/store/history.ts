@@ -5,7 +5,7 @@ interface PrizeData {
   stt: number;
   name: string;
   prize: string;
-  date: string;
+  date: Date;
 }
 
 interface StoreState {

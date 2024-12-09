@@ -1,5 +1,6 @@
 import {NextResponse} from 'next/server';
 import prisma from '@/lib/prisma';
+import {Employee} from "@/models/roulette";
 
 export async function GET() {
   try {
@@ -13,43 +14,35 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const {employees} = await req.json();
 
-    // Kiểm tra dữ liệu đầu vào
-    const {fullName, position, department} = body;
-    if (!fullName || !position || !department) {
-      return NextResponse.json(
-        {error: 'All fields are required'},
-        {status: 400}
-      );
+    if (!Array.isArray(employees) || employees.length === 0) {
+      return NextResponse.json({error: 'Invalid data'}, {status: 400});
     }
 
-    let randomStt: number;
-    let existingEmployee: { stt: number } | null;
-
-    do {
-      randomStt = Math.floor(Math.random() * 100000);
-      existingEmployee = await prisma.employee.findUnique({
-        where: {stt: randomStt}, // Bây giờ Prisma sẽ nhận `stt` là duy nhất
-      });
-    } while (existingEmployee);
-
-    // Tạo nhân viên mới trong database
-    const newEmployee = await prisma.employee.create({
-      data: {
+    const createdEmployees = await prisma.employee.createMany({
+      data: employees.map(({fullName, position, department, luckyNumber, stt}: Employee) => ({
         fullName,
         position,
         department,
-        stt: randomStt,
-      },
+        luckyNumber,
+        stt,
+      })),
     });
 
-    return NextResponse.json(newEmployee, {status: 201});
+    return NextResponse.json(createdEmployees, {status: 201});
   } catch (error) {
     console.error(error);
-    return NextResponse.json(
-      {error: 'Failed to create employee'},
-      {status: 500}
-    );
+    return NextResponse.json({error: 'Failed to upload employees'}, {status: 500});
+  }
+}
+
+export async function DELETE() {
+  try {
+    await prisma.employee.deleteMany();
+    return NextResponse.json({message: 'All employees deleted successfully!'}, {status: 200});
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({error: 'Failed to delete all employees'}, {status: 500});
   }
 }

@@ -12,6 +12,10 @@ import {Button} from "@/components/ui/button";
 import {Pause, Play} from "lucide-react";
 import {useStore} from "@/store/history";
 import {motion} from "framer-motion"
+import {Employee} from "@/models/roulette";
+import useEmployeeStore from "@/store/employee-store";
+import {Checkbox} from "@/components/ui/checkbox";
+import Jackpot from "@/components/jackpot";
 
 export default function Page() {
   const [value, setValue] = useState("");
@@ -22,6 +26,7 @@ export default function Page() {
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setValue(event.target.value);
   };
+  const [withEmp, setWithEmp] = useState<boolean>(false);
   const {nowPrize, setNowPrize} = useStore()
   const [isAuto, setIsAuto] = useState(false);
 
@@ -36,13 +41,12 @@ export default function Page() {
   const shuffleArray = (array: String[]): String[] => {
     return [...array].sort(() => Math.random() - 0.5);
   };
-
   const handleRandomize = () => {
     const randomizedLines = shuffleArray(lines);
     setLines(randomizedLines);
     setValue(randomizedLines.join("\n"));
   };
-
+  const {setEmployees} = useEmployeeStore()
   useEffect(() => {
     if (!prizes.find(item => item.quantity > 0) && isAuto) {
       setIsAuto(false)
@@ -87,6 +91,18 @@ export default function Page() {
     reader.readAsBinaryString(file);
   };
 
+
+  const fetchDepartments = async () => {
+    try {
+      const response = await fetch("/api/employees");
+      const employees = await response.json();
+      setEmployees(employees)
+      const uniqueDepartments = Array.from(new Set(employees.map((e: Employee) => e.department))) as string[];
+      setValue(uniqueDepartments.join("\n"))
+    } catch (error) {
+      console.error("Failed to fetch departments:", error);
+    }
+  };
 
   const handlePrizeChange = (
     index: number,
@@ -136,6 +152,8 @@ export default function Page() {
     <div
       className="w-[calc(100vw_-_400px)] [background-size:16px_16px] ml-[400px] min-h-[100dvh] sm:px-0 bg-bg px-5 pt-[88px] md:ml-[180px] md:w-[calc(100vw_-_180px)] sm:m-0 sm:w-full sm:pt-16"
     >
+      <Jackpot/>
+      
       <motion.div
         className="flex-row flex gap-3 pr-4 items-center text-2xl font-semibold  z-[20] top-[10px] left-[42%] -translate-x-1/2 fixed bg-white rounded-xl p-2"
         initial={{y: -100, opacity: 0}}
@@ -147,8 +165,9 @@ export default function Page() {
       </motion.div>
       <div
         className="flex sm:px-3 relative flex-row items-center w-full md:flex-col h-[calc(100vh-88px)] md:h-[calc(100vh-4rem)] py-5 md:pt-3 md:pb-2 overflow-x-hidden ">
-        <WheelComponent prize={prizes} setIsAuto={setIsAuto} setPrize={setPrizes} setValue={setValue} wheelItem={lines}
-                        isAuto={isAuto}/>
+        <WheelComponent prize={prizes} setIsAuto={setIsAuto} setPrize={setPrizes} setValue={setValue}
+                        wheelItem={lines}
+                        isAuto={isAuto} withEmp={withEmp}></WheelComponent>
         <div className="h-full flex-1">
           <Tabs defaultValue="1" className="w-[500px] sm:w-full">
             <TabsList>
@@ -183,6 +202,9 @@ export default function Page() {
                       onChange={handleFileUpload}
                       className="mt-2"
                     />
+                  </div>
+                  <div className="mt-4">
+                    <Button onClick={() => fetchDepartments()}>Chèn dữ liệu phòng ban</Button>
                   </div>
                   <div className='mt-6'>
                     <Button onClick={handleRandomize}>Random nhãn</Button>
@@ -256,6 +278,17 @@ export default function Page() {
                     <Button className="bg-blue-400" disabled={lines.length === 0} onClick={handleSpin}>{isAuto ?
                       <><Pause className='w-4 h-4 mr-2'/>Dừng lại</> : <><Play className='w-4 h-4 mr-2'/>Quay liên
                         tục</>}</Button>
+                  </div>
+                  <div className="mt-4">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox checked={withEmp} onCheckedChange={(value) => setWithEmp(value as boolean)} id="terms"/>
+                      <label
+                        htmlFor="terms"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        Quay nhân viên trong phòng ban
+                      </label>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

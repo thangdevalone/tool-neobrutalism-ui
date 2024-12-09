@@ -7,9 +7,9 @@ import Logo from "@/app/images/logo_min.jpg";
 import {Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle,} from "../ui/dialog";
 import Image from "next/image";
 import {useStore} from "@/store/history";
-import {motion} from "framer-motion";
+import useDialogStore from "@/store/dialog-jackpot";
 
-function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, setIsAuto}) {
+function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, setIsAuto, withEmp}) {
   const wheelContainer = useRef(null);
   const wheelInstance = useRef(null);
   const {addPrize, setNowPrize, nowPrize} = useStore()
@@ -17,6 +17,7 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
   const [random, setRandom] = useState(getRandomInt(0, items.length));
   const [openWin, setOpenWin] = useState(false);
   const winnerRef = useRef(null);
+  const {openDialog} = useDialogStore()
   const [colorArray, setColorArray] = useState();
   const [disable, setDisable] = useState(false);
   const [roling, setRoling] = useState(false);
@@ -107,7 +108,12 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
         setTimeout(() => {
           const getPrize = prize.find(item => item.quantity > 0)
           if (getPrize) {
-            addPrize({name: items[ran].label, prize: getPrize.name, date: new Date()})
+            if (withEmp) {
+              setIsAuto(false);
+              openDialog({department: items[ran].label, prize: getPrize.name}, () => setIsAuto(true))
+            } else {
+              addPrize({name: items[ran].label, prize: getPrize.name, date: new Date()})
+            }
             setPrize([...prize].map((item) => item.id === getPrize.id ? ({
               ...item,
               quantity: item.quantity - 1

@@ -14,9 +14,10 @@ datasource db {
 }
 
 model Employee {
-  id         Int    @id @default(autoincrement())
-  stt        Int    @unique
-  fullName   String
-  position   String
-  department String
+  id          Int    @id @default(autoincrement())
+  stt         Int
+  fullName    String
+  position    String
+  department  String
+  luckyNumber Int    @unique
 }
