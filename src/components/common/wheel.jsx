@@ -4,12 +4,13 @@ import React, {useEffect, useRef, useState} from "react";
 import {Wheel} from "spin-wheel";
 import {Button} from "../ui/button";
 import Logo from "@/app/images/logo_min.jpg";
-import {Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle,} from "../ui/dialog";
+import {Dialog, DialogContent, DialogHeader, DialogTitle,} from "../ui/dialog";
 import Image from "next/image";
 import {useStore} from "@/store/history";
-import useDialogStore from "@/store/dialog-jackpot";
+import useEmployeeStore from "@/store/employee-store";
+import {formatStringNumber} from "@/lib/utils";
 
-function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, setIsAuto, withEmp}) {
+function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, setIsAuto}) {
   const wheelContainer = useRef(null);
   const wheelInstance = useRef(null);
   const {addPrize, setNowPrize, nowPrize} = useStore()
@@ -17,10 +18,11 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
   const [random, setRandom] = useState(getRandomInt(0, items.length));
   const [openWin, setOpenWin] = useState(false);
   const winnerRef = useRef(null);
-  const {openDialog} = useDialogStore()
   const [colorArray, setColorArray] = useState();
   const [disable, setDisable] = useState(false);
   const [roling, setRoling] = useState(false);
+  const [winner, setWinner] = useState(undefined);
+  const {employees} = useEmployeeStore()
   useEffect(() => {
     if (wheelItem.length === 0) {
       setDisable(true);
@@ -62,7 +64,7 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
           lineWidth: 0,
           borderWidth: 0,
           isInteractive: false,
-          itemLabelFontSizeMax: 20,
+          itemLabelFontSizeMax: 25,
           itemLabelRadius: 0.97,
           itemLabelRadiusMax: 0.2,
           itemLabelRotation: 0,
@@ -82,7 +84,7 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
   function getRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min; // Inclusive of min and max
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
   const handleRole = () => {
@@ -93,7 +95,6 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
       const ran = getRandomInt(0, items.length - 1);
       setRoling(true);
       setRandom(ran)
-      console.log(wheelInstance?.current)
       if (wheelInstance?.current || wheelInstance?.current?.spinToItem) {
         if (!isAuto && !prize.find(item => item.quantity > 0)) {
           winnerRef.current = setTimeout(() => {
@@ -101,19 +102,30 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
             setRoling(false);
           }, 7400);
         } else {
-          setTimeout(() => {
-            removeNow(ran);
-          }, 6000);
+          // setTimeout(() => {
+          //   removeNow(ran);
+          // }, 9900);
         }
         setTimeout(() => {
+          setOpenWin(false);
+        }, 11000);
+        setTimeout(() => {
+          setRoling(false);
+        }, 11000);
+        setTimeout(() => {
           const getPrize = prize.find(item => item.quantity > 0)
+          const empDep = employees
+            .filter(emp => emp.department === items[ran]?.label)
+          const ranEmp = Math.floor(Math.random() * empDep.length);
+          setWinner(empDep[ranEmp])
+
+          setOpenWin(true);
           if (getPrize) {
-            if (withEmp) {
-              setIsAuto(false);
-              openDialog({department: items[ran].label, prize: getPrize.name}, () => setIsAuto(true))
-            } else {
-              addPrize({name: items[ran].label, prize: getPrize.name, date: new Date()})
-            }
+            addPrize({
+              name: empDep[ranEmp]?.fullName + " - " + empDep[ranEmp]?.department,
+              prize: getPrize.name,
+              date: new Date()
+            })
             setPrize([...prize].map((item) => item.id === getPrize.id ? ({
               ...item,
               quantity: item.quantity - 1
@@ -121,7 +133,6 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
           } else {
             setIsAuto(false);
           }
-          setRoling(false);
         }, 6000)
         wheelInstance.current?.spinToItem(
           ran,
@@ -135,40 +146,35 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
     }
   };
   useEffect(() => {
-    let intervalId;
 
-    if (isAuto && !roling) {
-      if (prize) {
-        const getPrize = prize.find(item => item.quantity > 0)
-        if (getPrize) {
-          console.log(nowPrize.length > 0, nowPrize, getPrize.name)
-          if (nowPrize.length === 0 || nowPrize !== getPrize.name) {
-            setNowPrize(getPrize.name)
-          } else if (getPrize.quantity === 1) {
-            setTimeout(() => {
-              setIsAuto(false);
-              setNowPrize("");
-            }, 5500)
+    const handler = () => {
+      if (isAuto && !roling && prize.find(item => item.quantity > 0)) {
+        if (prize) {
+          const getPrize = prize.find(item => item.quantity > 0)
+          if (getPrize) {
+            if (nowPrize.length === 0 || nowPrize !== getPrize.name) {
+              setNowPrize(getPrize.name)
+            } else if (getPrize.quantity === 1) {
+              setTimeout(() => {
+                setIsAuto(false);
+                setNowPrize("");
+              }, 5500)
+            }
+          } else {
+            setNowPrize("")
           }
-        } else {
-          setNowPrize("")
         }
+        handleRole();
       }
-      handleRole();
-      intervalId = setInterval(() => {
-        if (!roling && isAuto && prize.find(item => item.quantity > 0)) {
-          handleRole();
-        }
-      }, 6000);
     }
+    handler()
     if (!isAuto) {
-      clearInterval(intervalId);
       setNowPrize("");
 
     }
-    return () => clearInterval(intervalId);
 
   }, [isAuto, roling]);
+
 
   useEffect(() => {
     return () => {
@@ -191,25 +197,25 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
     }, 350);
   };
   return (
-    <div className="flex flex-col h-full  w-full">
+    <div className="flex flex-col h-full w-full">
       <Dialog onOpenChange={setOpenWin} open={openWin}>
-        <DialogContent>
+        <DialogContent onInteractOutside={(e) => {
+          e.preventDefault();
+        }}>
           <DialogHeader>
             <DialogTitle>Chúng ta đã có người chiến thắng!</DialogTitle>
-            <p className="mb-0 text-2xl font-semibold">
-              {(random !== null && items[random]?.label) || "Không xác định"}
-            </p>
           </DialogHeader>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button type="button" className="bg-white" variant="default">
-                Đóng
-              </Button>
-            </DialogClose>
-            <Button onClick={handleRemove} type="button" variant="default">
-              Gỡ
-            </Button>
-          </DialogFooter>
+          <>
+            {random !== null && items[random]?.label && winner && (
+              <div className="flex flex-col gap-3 justify-center">
+                <Image src={`/assets/mobi-data/${formatStringNumber(winner?.stt)}.png`} width={200} height={200}
+                       alt={"avt"}/>
+                <p className="font-xl text-lg font-semibold">{winner.fullName}</p>
+                <p>{winner.department}</p>
+              </div>
+            )}
+            <p>Auto close after 5s</p>
+          </>
         </DialogContent>
       </Dialog>
 

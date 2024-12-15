@@ -1,6 +1,6 @@
 import {NextResponse} from 'next/server';
 import prisma from '@/lib/prisma';
-import {Employee} from "@/models/roulette";
+import {Employee} from "@/models";
 
 export async function GET() {
   try {

@@ -5,17 +5,14 @@ import {Label} from "@/components/ui/label";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {Textarea} from "@/components/ui/textarea";
 import React, {ChangeEvent, useEffect, useState} from "react";
-import * as XLSX from "xlsx";
 import {Input} from "@/components/ui/input";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {Button} from "@/components/ui/button";
 import {Pause, Play} from "lucide-react";
 import {useStore} from "@/store/history";
 import {motion} from "framer-motion"
-import {Employee} from "@/models/roulette";
 import useEmployeeStore from "@/store/employee-store";
-import {Checkbox} from "@/components/ui/checkbox";
-import Jackpot from "@/components/jackpot";
+import {Employee} from "@/models";
 
 export default function Page() {
   const [value, setValue] = useState("");
@@ -26,7 +23,6 @@ export default function Page() {
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setValue(event.target.value);
   };
-  const [withEmp, setWithEmp] = useState<boolean>(false);
   const {nowPrize, setNowPrize} = useStore()
   const [isAuto, setIsAuto] = useState(false);
 
@@ -55,41 +51,6 @@ export default function Page() {
   useEffect(() => {
     setNowPrize("")
   }, [])
-  const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const data = e.target?.result;
-      if (!data) return;
-
-      const workbook = XLSX.read(data, {type: "binary"});
-      const sheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[sheetName];
-
-      const jsonData: any[][] = XLSX.utils.sheet_to_json(sheet, {
-        header: 1,
-      });
-      const firstColumnHeader = jsonData[0]?.[0]?.toString().trim();
-      if (firstColumnHeader !== "Người tham gia") {
-        alert("File không hợp lệ. Cột đầu tiên phải là 'Người tham gia'.");
-        return;
-      }
-
-      const newLines = jsonData
-        .slice(1)
-        .map((row) => row[0]?.toString().trim())
-        .filter((item) => item && item.length > 0);
-
-      setLines((prevLines) => {
-        setValue(newLines.join("\n"));
-        return newLines;
-      });
-    };
-
-    reader.readAsBinaryString(file);
-  };
 
 
   const fetchDepartments = async () => {
@@ -152,8 +113,6 @@ export default function Page() {
     <div
       className="w-[calc(100vw_-_400px)] [background-size:16px_16px] ml-[400px] min-h-[100dvh] sm:px-0 bg-bg px-5 pt-[88px] md:ml-[180px] md:w-[calc(100vw_-_180px)] sm:m-0 sm:w-full sm:pt-16"
     >
-      <Jackpot/>
-      
       <motion.div
         className="flex-row flex gap-3 pr-4 items-center text-2xl font-semibold  z-[20] top-[10px] left-[42%] -translate-x-1/2 fixed bg-white rounded-xl p-2"
         initial={{y: -100, opacity: 0}}
@@ -167,7 +126,7 @@ export default function Page() {
         className="flex sm:px-3 relative flex-row items-center w-full md:flex-col h-[calc(100vh-88px)] md:h-[calc(100vh-4rem)] py-5 md:pt-3 md:pb-2 overflow-x-hidden ">
         <WheelComponent prize={prizes} setIsAuto={setIsAuto} setPrize={setPrizes} setValue={setValue}
                         wheelItem={lines}
-                        isAuto={isAuto} withEmp={withEmp}></WheelComponent>
+                        isAuto={isAuto}></WheelComponent>
         <div className="h-full flex-1">
           <Tabs defaultValue="1" className="w-[500px] sm:w-full">
             <TabsList>
@@ -192,15 +151,6 @@ export default function Page() {
                       onChange={handleChange}
                       id="lablewheel"
                       placeholder="Viết nhãn mới ở mỗi dòng"
-                    />
-                  </div>
-                  <div className="mt-4">
-                    <Label>Nhập dữ liệu từ Excel</Label>
-                    <input
-                      type="file"
-                      accept=".xlsx, .xls"
-                      onChange={handleFileUpload}
-                      className="mt-2"
                     />
                   </div>
                   <div className="mt-4">
@@ -278,17 +228,6 @@ export default function Page() {
                     <Button className="bg-blue-400" disabled={lines.length === 0} onClick={handleSpin}>{isAuto ?
                       <><Pause className='w-4 h-4 mr-2'/>Dừng lại</> : <><Play className='w-4 h-4 mr-2'/>Quay liên
                         tục</>}</Button>
-                  </div>
-                  <div className="mt-4">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox checked={withEmp} onCheckedChange={(value) => setWithEmp(value as boolean)} id="terms"/>
-                      <label
-                        htmlFor="terms"
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        Quay nhân viên trong phòng ban
-                      </label>
-                    </div>
                   </div>
                 </CardContent>
               </Card>

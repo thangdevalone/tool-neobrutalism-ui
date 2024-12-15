@@ -25,6 +25,7 @@
     "next": "14.2.3",
     "prisma": "^6.0.1",
     "react": "^18",
+    "react-confetti": "^6.1.0",
     "react-dom": "^18",
     "react-hook-form": "^7.54.0",
     "sass": "^1.82.0",

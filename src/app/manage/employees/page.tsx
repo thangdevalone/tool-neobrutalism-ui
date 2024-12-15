@@ -26,27 +26,6 @@ const ManageEmployees = () => {
     fetchEmployees();
   }, []);
 
-  const handleAddEmployee = async (data: EmployeeFormValues) => {
-    const newEmployee = {
-      ...data,
-      id: editingEmployee ? editingEmployee.id : Date.now(),
-    };
-
-    const method = editingEmployee ? 'PUT' : 'POST';
-    const url = editingEmployee
-      ? `/api/employees/${editingEmployee.id}`
-      : '/api/employees';
-
-    await fetch(url, {
-      method,
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(newEmployee),
-    });
-
-    await fetchEmployees();
-    setEditingEmployee(null);
-  };
-
   const handleDeleteEmployee = async (id: number) => {
     await fetch(`/api/employees/${id}`, {method: 'DELETE'});
     fetchEmployees();

@@ -1,5 +1,5 @@
 import {create} from 'zustand';
-import {Employee} from "@/models/roulette";
+import {Employee} from "@/models";
 
 
 interface EmployeeStore {
@@ -9,7 +9,6 @@ interface EmployeeStore {
 
 const useEmployeeStore = create<EmployeeStore>((set) => ({
   employees: [],
-  // Gán nhiều nhân viên cùng lúc
   setEmployees: (employees) =>
     set({
       employees,
