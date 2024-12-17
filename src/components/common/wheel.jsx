@@ -8,7 +8,9 @@ import {Dialog, DialogContent, DialogHeader, DialogTitle,} from "../ui/dialog";
 import Image from "next/image";
 import {useStore} from "@/store/history";
 import useEmployeeStore from "@/store/employee-store";
-import {formatStringNumber} from "@/lib/utils";
+import {cn, formatStringNumber} from "@/lib/utils";
+import ReactConfetti from "react-confetti";
+import useWindowSize from "@/hooks/use-window-size";
 
 function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, setIsAuto}) {
   const wheelContainer = useRef(null);
@@ -22,7 +24,7 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
   const [disable, setDisable] = useState(false);
   const [roling, setRoling] = useState(false);
   const [winner, setWinner] = useState(undefined);
-  const {employees} = useEmployeeStore()
+  const {employees, removeEmployee} = useEmployeeStore()
   useEffect(() => {
     if (wheelItem.length === 0) {
       setDisable(true);
@@ -118,7 +120,10 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
             .filter(emp => emp.department === items[ran]?.label)
           const ranEmp = Math.floor(Math.random() * empDep.length);
           setWinner(empDep[ranEmp])
-
+          setTimeout(() => {
+            setOpenWin(false);
+            removeEmployee(empDep[ranEmp]?.id)
+          }, 11000);
           setOpenWin(true);
           if (getPrize) {
             addPrize({
@@ -196,25 +201,36 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
       setValue(val.map((item) => item.label).join("\n"));
     }, 350);
   };
+  const {width, height} = useWindowSize()
   return (
     <div className="flex flex-col h-full w-full">
+      <div className={cn(openWin ? "block" : "hidden", "fixed z-[200] top-0 left-0")}>
+        <ReactConfetti
+          width={width}
+          height={height}
+          numberOfPieces={300}
+        />
+      </div>
       <Dialog onOpenChange={setOpenWin} open={openWin}>
-        <DialogContent onInteractOutside={(e) => {
+        <DialogContent className="max-w-3xl" onInteractOutside={(e) => {
           e.preventDefault();
         }}>
           <DialogHeader>
-            <DialogTitle>Chúng ta đã có người chiến thắng!</DialogTitle>
+            <DialogTitle className="text-xl">Chúng ta đã có người chiến thắng!</DialogTitle>
           </DialogHeader>
           <>
             {random !== null && items[random]?.label && winner && (
-              <div className="flex flex-col gap-3 justify-center">
-                <Image src={`/assets/mobi-data/${formatStringNumber(winner?.stt)}.png`} width={200} height={200}
+              <div className="flex w-full flex-col items-center gap-3 justify-center">
+                <Image className="rounded-2xl object-cover"
+                       src={`/assets/mobi-data/${formatStringNumber(winner?.stt)}.png`}
+                       width={500} height={500}
                        alt={"avt"}/>
-                <p className="font-xl text-lg font-semibold">{winner.fullName}</p>
-                <p>{winner.department}</p>
+                <p className="text-3xl font-semibold">{winner.fullName}</p>
+                <p className="text-lg text-muted-foreground">{winner.department}</p>
+                <p className="text-xl">Giải thưởng : <strong>{nowPrize}</strong></p>
               </div>
             )}
-            <p>Auto close after 5s</p>
+            <p className="">Auto close after 4s</p>
           </>
         </DialogContent>
       </Dialog>
