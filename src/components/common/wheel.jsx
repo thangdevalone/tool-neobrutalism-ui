@@ -8,7 +8,7 @@ import {Dialog, DialogContent, DialogHeader, DialogTitle,} from "../ui/dialog";
 import Image from "next/image";
 import {useStore} from "@/store/history";
 import useEmployeeStore from "@/store/employee-store";
-import {cn, formatStringNumber} from "@/lib/utils";
+import {cn} from "@/lib/utils";
 import ReactConfetti from "react-confetti";
 import useWindowSize from "@/hooks/use-window-size";
 
@@ -125,9 +125,9 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
             removeEmployee(empDep[ranEmp]?.id)
           }, 11000);
           setOpenWin(true);
-          if (getPrize) {
+          if (getPrize && empDep[ranEmp]) {
             addPrize({
-              name: empDep[ranEmp]?.fullName + " - " + empDep[ranEmp]?.department,
+              ...empDep[ranEmp],
               prize: getPrize.name,
               date: new Date()
             })
@@ -221,13 +221,7 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
           <>
             {random !== null && items[random]?.label && winner && (
               <div className="flex w-full flex-col items-center gap-3 justify-center">
-                <Image className="rounded-2xl object-cover"
-                       src={`/assets/mobi-data/${formatStringNumber(winner?.stt)}.png`}
-                       width={500} height={500}
-                       alt={"avt"}/>
-                <p className="text-3xl font-semibold">{winner.fullName}</p>
-                <p className="text-lg text-muted-foreground">{winner.department}</p>
-                <p className="text-xl">Giải thưởng : <strong>{nowPrize}</strong></p>
+                <p className="text-3xl font-semibold">{winner.luckyNumber}</p>
               </div>
             )}
             <p className="">Auto close after 4s</p>

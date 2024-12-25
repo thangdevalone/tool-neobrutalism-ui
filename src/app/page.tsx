@@ -42,7 +42,7 @@ export default function Page() {
     setLines(randomizedLines);
     setValue(randomizedLines.join("\n"));
   };
-  const {setEmployees} = useEmployeeStore()
+  const {setEmployees, employees} = useEmployeeStore()
   useEffect(() => {
     if (!prizes.find(item => item.quantity > 0) && isAuto) {
       setIsAuto(false)
@@ -58,13 +58,16 @@ export default function Page() {
       const response = await fetch("/api/employees");
       const employees = await response.json();
       setEmployees(employees)
-      const uniqueDepartments = Array.from(new Set(employees.map((e: Employee) => e.department))) as string[];
-      setValue(uniqueDepartments.join("\n"))
+
     } catch (error) {
       console.error("Failed to fetch departments:", error);
     }
   };
 
+  useEffect(() => {
+    const uniqueDepartments = Array.from(new Set(employees.map((e: Employee) => e.department))) as string[];
+    setValue(uniqueDepartments.join("\n"))
+  }, [employees]);
   const handlePrizeChange = (
     index: number,
     field: "name" | "quantity",
@@ -111,7 +114,7 @@ export default function Page() {
   };
   return (
     <div
-      className="w-[calc(100vw_-_400px)] [background-size:16px_16px] ml-[400px] min-h-[100dvh] sm:px-0 bg-bg px-5 pt-[88px] md:ml-[180px] md:w-[calc(100vw_-_180px)] sm:m-0 sm:w-full sm:pt-16"
+      className="w-[calc(100vw_-_400px)] relative [background-size:16px_16px] ml-[400px] min-h-[100dvh] sm:px-0 bg-bg px-5 pt-[88px] md:ml-[180px] md:w-[calc(100vw_-_180px)] sm:m-0 sm:w-full sm:pt-16"
     >
       <motion.div
         className="flex-row flex gap-3 pr-4 items-center text-2xl font-semibold  z-[20] top-[10px] left-[42%] -translate-x-1/2 fixed bg-white rounded-xl p-2"
