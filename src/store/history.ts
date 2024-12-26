@@ -36,13 +36,13 @@ export const useStore = create(
           const prizeToDelete = state.prizes.find((prize) => prize.stt === stt);
           return {
             prizes: state.prizes.filter((prize) => prize.stt !== stt),
-            deletePrize: prizeToDelete ? prizeToDelete.prize : null, // Store deleted prize name or null
+            deletePrize: prizeToDelete ? prizeToDelete.prize + "_" + Math.random() : null,
           };
         }),
       clearStore: () =>
         set(() => ({
           prizes: [],
-          deletePrize: null, // Clear deletePrize when resetting
+          deletePrize: null,
         })),
       setNowPrize: (prize) => set(() => ({nowPrize: prize})), // Update `nowPrize`
     }),

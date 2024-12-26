@@ -23,7 +23,7 @@ export default function Page() {
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setValue(event.target.value);
   };
-  const {nowPrize, setNowPrize, deletePrize, removePrize} = useStore()
+  const {nowPrize, setNowPrize, deletePrize} = useStore()
   const [isAuto, setIsAuto] = useState(false);
 
   useEffect(() => {
@@ -56,13 +56,13 @@ export default function Page() {
     if (deletePrize) {
       setPrizes((prevPrizes) =>
         prevPrizes.map((prize) =>
-          prize.name === deletePrize
+          prize.name === deletePrize.split("_")[0]
             ? {...prize, quantity: prize.quantity + 1}
             : prize
         )
       );
     }
-  }, [deletePrize, removePrize]);
+  }, [deletePrize]);
 
 
   const fetchDepartments = async () => {
