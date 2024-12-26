@@ -14,7 +14,6 @@ type Employee = {
 
 const ManageEmployees = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
 
   const fetchEmployees = async () => {
     const response = await fetch('/api/employees');

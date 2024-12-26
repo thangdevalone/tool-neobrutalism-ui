@@ -23,7 +23,7 @@ export default function Page() {
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setValue(event.target.value);
   };
-  const {nowPrize, setNowPrize, deletePrize} = useStore()
+  const {nowPrize, setNowPrize, deletePrize, removePrize} = useStore()
   const [isAuto, setIsAuto] = useState(false);
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export default function Page() {
         )
       );
     }
-  }, [deletePrize]);
+  }, [deletePrize, removePrize]);
 
 
   const fetchDepartments = async () => {

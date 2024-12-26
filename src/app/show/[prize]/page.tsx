@@ -16,8 +16,8 @@ export default function Page({params}: { params: { prize: string } }) {
 
   const [filteredPrizes, setFilteredPrizes] = useState<any>([]);
   useEffect(() => {
-    setFilteredPrizes(prizes.filter((prize: any) => prize.prize === params.prize))
-  }, [prizes, params.prize]);
+    setFilteredPrizes(prizes.filter((prize: any) => prize.prize === decodeURIComponent(params.prize)))
+  }, [prizes, decodeURIComponent(params.prize)]);
   const [images, setImages] = useState<Record<string, string>>({});
   const cacheRef = useRef<Record<string, string>>({}); // Lưu cache ở đây
 
@@ -68,7 +68,7 @@ export default function Page({params}: { params: { prize: string } }) {
         <Button onClick={() => router.push("/")} className="mb-4">
           Quay lại
         </Button>
-        <h1 className="text-2xl font-semibold mb-4">Danh sách người trúng: {params.prize}</h1>
+        <h1 className="text-2xl font-semibold mb-4">Danh sách người trúng: {decodeURIComponent(params.prize)}</h1>
         {filteredPrizes.length > 0 ? (
           <div className="flex flex-col gap-4">
             {filteredPrizes.map((prize: any) => (
