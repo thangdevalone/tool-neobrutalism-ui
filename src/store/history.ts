@@ -4,7 +4,7 @@ import {create} from 'zustand';
 interface PrizeData {
   stt: number;
   fullName: string;
-  luckyNumber: string | number; // Consider narrowing `any` to string or number
+  luckyNumber: string | number;
   position: string;
   prize: string;
   date: Date;
@@ -13,6 +13,7 @@ interface PrizeData {
 interface StoreState {
   prizes: PrizeData[];
   nowPrize: string; // Field to track the current prize
+  deletePrize: string | null; // Store the prize name of the last deleted prize
   addPrize: (newPrize: PrizeData) => void;
   removePrize: (stt: number) => void;
   clearStore: () => void;
@@ -24,15 +25,25 @@ export const useStore = create(
     (set) => ({
       prizes: [],
       nowPrize: "",
+      deletePrize: null, // Initialize as null
       addPrize: (newPrize) =>
         set((state) => ({
-          prizes: [...state.prizes, newPrize], // Use `stt` from the provided `newPrize`
+          prizes: [...state.prizes, newPrize], // Add the new prize to the list
         })),
       removePrize: (stt) =>
-        set((state) => ({
-          prizes: state.prizes.filter((prize) => prize.stt !== stt),
+        set((state) => {
+          // Find the prize to be removed
+          const prizeToDelete = state.prizes.find((prize) => prize.stt === stt);
+          return {
+            prizes: state.prizes.filter((prize) => prize.stt !== stt),
+            deletePrize: prizeToDelete ? prizeToDelete.prize : null, // Store deleted prize name or null
+          };
+        }),
+      clearStore: () =>
+        set(() => ({
+          prizes: [],
+          deletePrize: null, // Clear deletePrize when resetting
         })),
-      clearStore: () => set(() => ({prizes: []})),
       setNowPrize: (prize) => set(() => ({nowPrize: prize})), // Update `nowPrize`
     }),
     {

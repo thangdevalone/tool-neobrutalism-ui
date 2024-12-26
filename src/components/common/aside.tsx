@@ -35,7 +35,8 @@ const Aside = () => {
         {Object.entries(groupedPrizes).map(([prizeName, prizeList]) => (
           <div key={prizeName}>
             <div className="flex flex-row gap-2 items-center"><p
-              className="font-semibold text-lg py-2">Giải: {prizeName}</p> <Eye className="cursor-pointer" onClick={()=>router.push(`/show/${prizeName}`)}/>
+              className="font-semibold text-lg py-2">Giải: {prizeName}</p> <Eye className="cursor-pointer"
+                                                                                onClick={() => window.open(`/show/${prizeName}`, '_blank')}/>
             </div>
             <div className="pl-4">
               {(prizeList as any).map((prize: any) => (
