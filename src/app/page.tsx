@@ -78,6 +78,7 @@ export default function Page() {
 
   useEffect(() => {
     const uniqueDepartments = Array.from(new Set(employees.map((e: Employee) => e.department))) as string[];
+    console.log(uniqueDepartments)
     setValue(uniqueDepartments.join("\n"))
   }, [employees]);
   const handlePrizeChange = (

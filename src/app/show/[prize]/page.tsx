@@ -4,7 +4,6 @@ import {useRouter} from "next/navigation";
 import {useStore} from "@/store/history";
 import {format} from "date-fns";
 import {Button} from "@/components/ui/button";
-import {Award} from "lucide-react";
 
 const padStt = (stt: number): string => stt.toString().padStart(3, "0");
 
@@ -18,6 +17,7 @@ export default function Page({params}: { params: { prize: string } }) {
   useEffect(() => {
     setFilteredPrizes(prizes.filter((prize: any) => prize.prize === decodeURIComponent(params.prize)))
   }, [prizes, decodeURIComponent(params.prize)]);
+
   const [images, setImages] = useState<Record<string, string>>({});
   const cacheRef = useRef<Record<string, string>>({}); // Lưu cache ở đây
 
@@ -70,19 +70,21 @@ export default function Page({params}: { params: { prize: string } }) {
         </Button>
         <h1 className="text-2xl font-semibold mb-4">Danh sách người trúng: {decodeURIComponent(params.prize)}</h1>
         {filteredPrizes.length > 0 ? (
-          <div className="flex flex-col gap-4">
+          <div className="grid grid-cols-4  gap-6">
             {filteredPrizes.map((prize: any) => (
-              <div key={prize.stt} className="flex flex-row items-center gap-2 border-b py-2">
+              <div key={prize.stt} className="flex flex-col p-4 border rounded-lg shadow-md bg-white gap-4">
                 <img
-                  className="w-[100px] rounded-xl aspect-square object-center"
+                  className="w-full h-[250px] rounded-md object-cover"
                   src={images[padStt(prize.stt)] || defaultImage}
-                  alt="avt"
+                  alt={prize.fullName}
                 />
-                <Award size={16}/>
-                <p>
-                  {prize.fullName} - {prize.position} - {prize.luckyNumber} (
-                  {format(prize.date, "PP HH:mm:ss")})
-                </p>
+                <div className="flex flex-col gap-2">
+                  <h2 className="text-lg font-semibold">{prize.fullName}</h2>
+                  <p className="text-sm text-gray-500">Phòng ban: {prize.position}</p>
+                  <p className="text-sm text-gray-500">
+                    Mã may mắn: {prize.luckyNumber} - {format(prize.date, "PP HH:mm:ss")}
+                  </p>
+                </div>
               </div>
             ))}
           </div>

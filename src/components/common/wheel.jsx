@@ -123,7 +123,7 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
           setTimeout(() => {
             setOpenWin(false);
             removeEmployee(empDep[ranEmp]?.id)
-          }, 11000);
+          }, 4600);
           setOpenWin(true);
           if (getPrize && empDep[ranEmp]) {
             addPrize({
