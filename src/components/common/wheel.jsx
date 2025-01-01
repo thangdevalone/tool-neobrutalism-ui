@@ -117,13 +117,15 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
         setTimeout(() => {
           const getPrize = prize.find(item => item.quantity > 0)
           const empDep = employees
-            .filter(emp => emp.department === items[ran]?.label)
+            .filter(emp => emp.department.trim() === items[ran]?.label.trim())
           const ranEmp = Math.floor(Math.random() * empDep.length);
           setWinner(empDep[ranEmp])
+          console.log(employees, items[ran]?.label)
+
           setTimeout(() => {
             setOpenWin(false);
             removeEmployee(empDep[ranEmp]?.id)
-          }, 4600);
+          }, 4300);
           setOpenWin(true);
           if (getPrize && empDep[ranEmp]) {
             addPrize({
