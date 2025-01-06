@@ -128,7 +128,7 @@ export default function Page() {
   return (
     <div
       style={{backgroundImage: "url('/assets/bg.jpg')"}}
-      className="w-[calc(100vw_-_400px)] bg-no-repeat bg-contain relative ml-[400px] min-h-[100dvh] sm:px-0 px-5 md:ml-[180px] md:w-[calc(100vw_-_180px)] sm:m-0 sm:w-full sm:pt-16"
+      className="w-[calc(100vw_-_400px)] bg-no-repeat bg-cover relative ml-[400px] min-h-[100dvh] sm:px-0 px-5 md:ml-[180px] md:w-[calc(100vw_-_180px)] sm:m-0 sm:w-full sm:pt-16"
     >
       <motion.div
         className="flex-row flex gap-3 pr-4 items-center text-2xl font-semibold  z-[20] top-[10px] left-[42%] -translate-x-1/2 fixed bg-white rounded-xl p-2"

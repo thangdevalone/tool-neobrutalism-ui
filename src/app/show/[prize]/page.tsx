@@ -63,12 +63,14 @@ export default function Page({params}: { params: { prize: string } }) {
 
   return (
     <div
-      className="w-[calc(100vw_-_400px)] [background-size:16px_16px] ml-[400px] h-[100dvh] sm:px-0 bg-bg px-5 py-[88px] md:ml-[180px] md:w-[calc(100vw_-_180px)] sm:m-0 sm:w-full overflow-y-auto sm:pt-16">
+      style={{backgroundImage: "url('/assets/bg.jpg')"}}
+      className="w-[calc(100vw_-_400px)] bg-cover bg-no-repeat ml-[400px] h-[100dvh] sm:px-0 bg-bg px-5 py-[88px] md:ml-[180px] md:w-[calc(100vw_-_180px)] sm:m-0 sm:w-full overflow-y-auto sm:pt-16">
       <div className="p-4">
         <Button onClick={() => router.push("/")} className="mb-4">
           Quay lại
         </Button>
-        <h1 className="text-2xl font-semibold mb-4">Danh sách người trúng: {decodeURIComponent(params.prize)}</h1>
+        <h1 className="text-2xl bg-white p-3 border rounded-md w-fit font-semibold mb-4">Danh sách người
+          trúng: {decodeURIComponent(params.prize)}</h1>
         {filteredPrizes.length > 0 ? (
           <div className="grid grid-cols-4  gap-6">
             {filteredPrizes.map((prize: any) => (
