@@ -127,7 +127,8 @@ export default function Page() {
   };
   return (
     <div
-      className="w-[calc(100vw_-_400px)] relative [background-size:16px_16px] ml-[400px] min-h-[100dvh] sm:px-0 bg-bg px-5 pt-[88px] md:ml-[180px] md:w-[calc(100vw_-_180px)] sm:m-0 sm:w-full sm:pt-16"
+      style={{backgroundImage: "url('/assets/bg.jpg')"}}
+      className="w-[calc(100vw_-_400px)] bg-no-repeat bg-contain relative ml-[400px] min-h-[100dvh] sm:px-0 px-5 md:ml-[180px] md:w-[calc(100vw_-_180px)] sm:m-0 sm:w-full sm:pt-16"
     >
       <motion.div
         className="flex-row flex gap-3 pr-4 items-center text-2xl font-semibold  z-[20] top-[10px] left-[42%] -translate-x-1/2 fixed bg-white rounded-xl p-2"

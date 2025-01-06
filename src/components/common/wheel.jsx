@@ -73,7 +73,7 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
           itemLabelColors: ["#fff"],
           pointerAngle: 90,
           itemBackgroundColors: colorArray,
-          overlayImage: "./assets/wheel-overlay.svg",
+          overlayImage: "./assets/wheel-ver2.svg",
         });
       } else {
         // Update the existing wheel instance with new items

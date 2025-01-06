@@ -40,7 +40,7 @@ const config = {
       },
       colors: {
         bg: "#dfe5f2",
-        main: "#88aaee",
+        main: "#ff6b6b",
         border: "#000",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

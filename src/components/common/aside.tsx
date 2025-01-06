@@ -25,11 +25,11 @@ const Aside = () => {
 
   return (
     <aside
-      className="scrollbar fixed top-[88px] h-[calc(100svh_-_88px)] max-h-[calc(100svh_-_88px)] w-[400px] overflow-y-auto border-r-4 border-black md:w-[180px] sm:hidden"
+      className="scrollbar fixed top-[88px] h-[calc(100svh_-_88px)] max-h-[calc(100svh_-_88px)] w-[400px] overflow-y-auto border-r-2 border-black md:w-[180px] sm:hidden"
     >
       <p className="font-semibold text-2xl text-center border-b py-3 border-black">Lịch sử vòng quay</p>
-      <div className="py-3 px-4" onClick={() => clearStore()}>
-        <Button>Xoá tất cả lịch sử</Button>
+      <div className="py-3 px-4 flex justify-end">
+        <Button onClick={() => clearStore()}>Xoá tất cả lịch sử</Button>
       </div>
       <div className="flex flex-col gap-3 px-4 pb-3">
         {Object.entries(groupedPrizes).map(([prizeName, prizeList]) => (
