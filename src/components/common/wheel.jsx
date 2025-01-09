@@ -11,6 +11,7 @@ import useEmployeeStore from "@/store/employee-store";
 import {cn} from "@/lib/utils";
 import ReactConfetti from "react-confetti";
 import useWindowSize from "@/hooks/use-window-size";
+import {motion} from "framer-motion";
 
 function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, setIsAuto}) {
   const wheelContainer = useRef(null);
@@ -24,6 +25,7 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
   const [disable, setDisable] = useState(false);
   const [roling, setRoling] = useState(false);
   const [winner, setWinner] = useState(undefined);
+
   const {employees, removeEmployee} = useEmployeeStore()
   useEffect(() => {
     if (wheelItem.length === 0) {
@@ -59,7 +61,6 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
   useEffect(() => {
     if (wheelContainer.current) {
       if (!wheelInstance.current) {
-        // Initialize the wheel instance if it does not already exist
         wheelInstance.current = new Wheel(wheelContainer.current, {
           items,
           radius: 0.89,
@@ -76,7 +77,6 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
           overlayImage: "./assets/wheel-ver2.svg",
         });
       } else {
-        // Update the existing wheel instance with new items
         wheelInstance.current.items = items;
         wheelInstance.current.itemBackgroundColors = colorArray;
       }
@@ -110,36 +110,36 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
         }
         setTimeout(() => {
           setOpenWin(false);
-        }, 11000);
-        setTimeout(() => {
           setRoling(false);
-        }, 11000);
+        }, 17000);
         setTimeout(() => {
-          const getPrize = prize.find(item => item.quantity > 0)
-          const empDep = employees
-            .filter(emp => emp.department.trim() === items[ran]?.label.trim())
-          const ranEmp = Math.floor(Math.random() * empDep.length);
-          setWinner(empDep[ranEmp])
-          console.log(employees, items[ran]?.label)
+          setOpenWin(true);
 
           setTimeout(() => {
-            setOpenWin(false);
-            removeEmployee(empDep[ranEmp]?.id)
-          }, 4300);
-          setOpenWin(true);
-          if (getPrize && empDep[ranEmp]) {
-            addPrize({
-              ...empDep[ranEmp],
-              prize: getPrize.name,
-              date: new Date()
-            })
-            setPrize([...prize].map((item) => item.id === getPrize.id ? ({
-              ...item,
-              quantity: item.quantity - 1
-            }) : item));
-          } else {
-            setIsAuto(false);
-          }
+            const getPrize = prize.find(item => item.quantity > 0)
+            const empDep = employees
+              .filter(emp => emp.department.trim() === items[ran]?.label.trim())
+            const ranEmp = Math.floor(Math.random() * empDep.length);
+            setWinner(empDep[ranEmp])
+            setTimeout(() => {
+              setOpenWin(false);
+              removeEmployee(empDep[ranEmp]?.id)
+              setWinner(undefined)
+            }, 4300);
+            if (getPrize && empDep[ranEmp]) {
+              addPrize({
+                ...empDep[ranEmp],
+                prize: getPrize.name,
+                date: new Date()
+              })
+              setPrize([...prize].map((item) => item.id === getPrize.id ? ({
+                ...item,
+                quantity: item.quantity - 1
+              }) : item));
+            } else {
+              setIsAuto(false);
+            }
+          }, 6000)
         }, 6000)
         wheelInstance.current?.spinToItem(
           ran,
@@ -165,7 +165,7 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
               setTimeout(() => {
                 setIsAuto(false);
                 setNowPrize("");
-              }, 5500)
+              }, 11500)
             }
           } else {
             setNowPrize("")
@@ -177,9 +177,7 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
     handler()
     if (!isAuto) {
       setNowPrize("");
-
     }
-
   }, [isAuto, roling]);
 
 
@@ -220,14 +218,28 @@ function WheelComponent({wheelItem, setValue, isAuto = false, prize, setPrize, s
           <DialogHeader>
             <DialogTitle className="text-xl">Chúng ta đã có người chiến thắng!</DialogTitle>
           </DialogHeader>
-          <>
-            {random !== null && items[random]?.label && winner && (
-              <div className="flex w-full flex-col items-center gap-3 justify-center">
-                <p className="text-3xl font-semibold">{winner.luckyNumber}</p>
-              </div>
+          <div className="flex flex-col items-center text-center justify-center gap-4 p-4">
+            {random !== null && items[random]?.label && (
+              <motion.div
+                className="flex w-full flex-col items-center gap-3 justify-center"
+                initial={{scale: 0}}
+                animate={{scale: 1}}
+                transition={{duration: 0.5, type: "spring", stiffness: 100}}
+              >
+                <p className="text-3xl text-center font-semibold">{items[random]?.label}</p>
+              </motion.div>
             )}
-            <p className="">Auto close after 4s</p>
-          </>
+            {random !== null && items[random]?.label && winner && (
+              <motion.div
+                className="flex w-full flex-col items-center gap-3 justify-center"
+                initial={{scale: 0}}
+                animate={{scale: 1}}
+                transition={{duration: 0.5, delay: 0.3, type: "spring", stiffness: 100}}
+              >
+                <p className="text-3xl font-semibold">Số may mắn: {winner.luckyNumber}</p>
+              </motion.div>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
 
